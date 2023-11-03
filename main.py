@@ -14,7 +14,7 @@ path_to_save="/var/www/html/folder/" #save to nginx folder
 client = TelegramClient('session_name', api_id, api_hash)
 client.start()
 cgcool=client.get_entity(channel_)
-time_edit=0
+time_edit=0;last_c=0
 
 dem2 = lambda list,where:[l[where] for l in list]
 
@@ -27,11 +27,14 @@ pre_first_msg=pre_first_msg[1]
 async def callback(current, total):
    global time_edit
    global pre_first_msg
+   global last_c
    dsd=int(100*(current/total))
-   if time.time()-time_edit>3:
-      try:await client.edit_message(pre_first_msg,f"down: {dsd}%")
+   if time.time()-time_edit>=1:
+      sp="{:.2f}".format((current-last_c)/1024/1024)
+      try:await client.edit_message(pre_first_msg,f"down: {dsd}%  |  {sp} MBps")
       except errors.rpcerrorlist.MessageNotModifiedError:pass
       time_edit=time.time()
+      last_c=current
 
 def get_files(path=path_to_save):
    allofthem=[]
